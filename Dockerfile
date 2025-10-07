@@ -1,0 +1,21 @@
+FROM balenalib/raspberrypi4-64-debian:buster-build as builder
+# Install build tools and remove layer cache afterwards 
+
+
+# Switch to working directory for our app
+WORKDIR /usr/src/app
+
+# Copy all the source code in.
+COPY . .
+
+RUN make clean all
+
+FROM balenalib/raspberrypi4-64-debian:buster
+
+RUN install_packages jq
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/ ./
+
+CMD ["bash", "start.sh"]
